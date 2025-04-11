@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include "cp_data.h"
 
@@ -78,8 +79,25 @@ int main(int argc, char** argv)
     return 1;
   }
 
+  ifstream source(from_path, ios::binary);
+  ofstream destination(to_path, ios::binary);
+  
+  if (source.is_open() && destination.is_open()) {
+    char buffer[4096];
+    std::streamsize bytesRead;
 
+    while ((bytesRead = source.read(buffer, sizeof(buffer)).gcount()) > 0) {
+      destination.write(buffer, bytesRead);
+    }
 
-  // cout << argv[0] << " " << argc << endl;
-  cout << from_path << " " << to_path << " " << options.progress_enabled << endl;
+    if (!source.eof()) {
+      std::cerr << "Error occurred while copying the file." << std::endl;
+      return 1;
+    }
+    cout << "File copied successfully!" << endl;
+  } else {
+    cerr << "Error opening files." << endl;
+  }
+
+  return 0;
 }
