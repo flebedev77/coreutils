@@ -17,7 +17,7 @@ clean:
 	rm -v $(OUTDIR)/*
 
 $(CP_EXEC): $(CP_SRC)
-	$(CXX) $(CXXFLAGS) -o $(CP_EXEC) $(CP_SRC)
+	$(CXX) $(CXXFLAGS) -o $(CP_EXEC) $(CP_SRC) $(SRCDIR)/utils.cpp
 
 $(MV_EXEC): $(MV_SRC)
-	$(CXX) $(CXXFLAGS) -o $(MV_EXEC) $(MV_SRC)
+	$(CXX) $(CXXFLAGS) -o $(MV_EXEC) $(MV_SRC) $(SRCDIR)/utils.cpp

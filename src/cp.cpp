@@ -2,11 +2,14 @@
 #include <fstream>
 #include <string>
 #include "cp_data.h"
+#include "utils.h"
 
 
 struct CopyOptions 
 {
   bool progress_enabled;
+  bool recursive;
+  bool verbose;
 };
 
 int main(int argc, char** argv) 
@@ -14,7 +17,7 @@ int main(int argc, char** argv)
   using namespace std;  
 
   CopyOptions options = {
-    false
+    false, false, false
   };
 
   string from_path = "";
@@ -42,12 +45,34 @@ int main(int argc, char** argv)
     for (int i = 1; i < argc; i++) {
       string current_argument(argv[i]);
 
-      if (
-          current_argument == "-p" ||
-          current_argument == "--progress"
-        )
+      if (current_argument.at(0) == '-')
       {
-        options.progress_enabled = true;
+        if (
+            string_includes_char(current_argument, 'p') ||
+            current_argument == "--progress"
+           )
+        {
+          options.progress_enabled = true;
+        }
+
+        if (
+            string_includes_char(current_argument, 'r') ||
+            string_includes_char(current_argument, 'R') ||
+            current_argument == "--recursive"
+           )
+        {
+          options.recursive = true;
+        }
+
+
+        if (
+            string_includes_char(current_argument, 'v') ||
+            current_argument == "--verbose"
+           )
+        {
+          options.verbose = true;
+        }
+
       }
 
       if (current_argument.at(0) != '-')
@@ -79,24 +104,12 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  ifstream source(from_path, ios::binary);
-  ofstream destination(to_path, ios::binary);
-  
-  if (source.is_open() && destination.is_open()) {
-    char buffer[4096];
-    std::streamsize bytesRead;
-
-    while ((bytesRead = source.read(buffer, sizeof(buffer)).gcount()) > 0) {
-      destination.write(buffer, bytesRead);
-    }
-
-    if (!source.eof()) {
-      std::cerr << "Error occurred while copying the file." << std::endl;
-      return 1;
-    }
-    cout << "File copied successfully!" << endl;
-  } else {
-    cerr << "Error opening files." << endl;
+  if (!options.recursive)
+  {
+    copy_file(from_path, to_path, options.verbose);
+  } else
+  {
+    // TODO: Loop through all the files and directories in the from_path and copy them to to_path
   }
 
   return 0;
