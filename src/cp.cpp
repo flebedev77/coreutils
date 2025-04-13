@@ -106,7 +106,7 @@ int main(int argc, char** argv)
 
   if (!options.recursive)
   {
-    copy_file(from_path, to_path, options.verbose);
+    copy_file(from_path, to_path, options.verbose, options.progress_enabled);
   } else
   {
     // TODO: Loop through all the files and directories in the from_path and copy them to to_path
