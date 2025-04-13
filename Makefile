@@ -1,6 +1,6 @@
 CXX = g++
 
-CXXFLAGS=-O3 -std=c++11 -Wall -Wextra -g
+CXXFLAGS=-O3 -std=c++17 -Wall -Wextra -g
 
 OUTDIR=build
 OBJDIR=build/objs

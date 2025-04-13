@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <filesystem>
 #include "cp_data.h"
 #include "utils.h"
 
@@ -35,7 +36,7 @@ int main(int argc, char** argv)
     for (int i = 1; i < argc; i++) {
       string current_argument(argv[i]);
 
-      if (current_argument == "--help")
+      if (current_argument == "--help" || current_argument == "-h")
       {
         cout << help_message;
         return 1;
@@ -104,8 +105,20 @@ int main(int argc, char** argv)
     return 1;
   }
 
+  if (get_filename_from_path(from_path) == "" || filesystem::is_directory(from_path))
+  {
+    cout << "cp: -r not specified; omitting directory '" << from_path << "'\n";
+    return 1;
+  }
+
   if (get_filename_from_path(to_path) == "")
   {
+    to_path += get_filename_from_path(from_path);
+  }
+
+  if (filesystem::is_directory(to_path))
+  {
+    to_path += "/";
     to_path += get_filename_from_path(from_path);
   }
 
@@ -116,6 +129,7 @@ int main(int argc, char** argv)
   {
     // TODO: Loop through all the files and directories in the from_path and copy them to to_path
     
+
   }
 
   return 0;
