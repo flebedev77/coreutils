@@ -14,6 +14,9 @@ bool copy_file(
     bool show_progress
   );
 
+std::string get_filename_from_path(const std::string& path);
+
+
 struct StorageAmount
 {
   std::string suffix;

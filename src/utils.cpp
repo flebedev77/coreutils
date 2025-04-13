@@ -5,6 +5,17 @@ bool string_includes_char(std::string& str, char find)
   return str.find(find) != std::string::npos;
 }
 
+std::string get_filename_from_path(const std::string& path) {
+    std::string filename;
+    std::size_t last_slash_pos = path.find_last_of("/\\");
+    if (last_slash_pos != std::string::npos) {
+        filename = path.substr(last_slash_pos + 1);
+    } else {
+        filename = path;
+    }
+    return filename;
+}
+
 
 StorageAmount convert_bytes(float value) 
 {

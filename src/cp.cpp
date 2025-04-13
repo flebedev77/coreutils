@@ -104,12 +104,18 @@ int main(int argc, char** argv)
     return 1;
   }
 
+  if (get_filename_from_path(to_path) == "")
+  {
+    to_path += get_filename_from_path(from_path);
+  }
+
   if (!options.recursive)
   {
     copy_file(from_path, to_path, options.verbose, options.progress_enabled);
   } else
   {
     // TODO: Loop through all the files and directories in the from_path and copy them to to_path
+    
   }
 
   return 0;
