@@ -48,11 +48,12 @@ bool copy_file(
   ifstream file(from_path, ios::binary | ios::ate);
   streampos pointer_pos = file.tellg();
   size_t filesize = static_cast<size_t>(pointer_pos);
+  StorageAmount filesize_formatted = convert_bytes(static_cast<float>(filesize));
 
 
   if (show_progress)
   {
-    cout << "0.00% \r";
+    cout << "Copying... \r";
   }
 
   chrono::steady_clock::time_point start_time = chrono::steady_clock::now();
@@ -60,6 +61,7 @@ bool copy_file(
   chrono::duration<float> elapsed_time;
   chrono::duration<float> update_speed = chrono::milliseconds(100);
   chrono::duration<float> time_since_last_update = chrono::seconds(5);
+
   if (source.is_open() && destination.is_open()) {
     char buffer[4096];
     streamsize bytes_read;
@@ -83,8 +85,10 @@ bool copy_file(
           float bytes_per_second = static_cast<float>(bytes_copied) / elapsed_time.count(); 
 
           StorageAmount copy_speed = convert_bytes(bytes_per_second);
+          StorageAmount bytes_copied_formatted = convert_bytes(static_cast<float>(bytes_copied));
 
-          cout << fixed << setprecision(2) << (static_cast<float>(bytes_copied) / static_cast<float>(filesize)) * 100.f << "% - " << copy_speed.amount << copy_speed.suffix << "/s - " << elapsed_time.count() << "s \r" << flush;
+          cout << "                                                             \r" << flush;
+          cout << fixed << setprecision(2) << bytes_copied_formatted.amount << bytes_copied_formatted.suffix << "/" << filesize_formatted.amount << filesize_formatted.suffix << " - " << (static_cast<float>(bytes_copied) / static_cast<float>(filesize)) * 100.f << "% - " << copy_speed.amount << copy_speed.suffix << "/s - " << elapsed_time.count() << "s \r" << flush;
         }
       }
     }
@@ -97,6 +101,8 @@ bool copy_file(
   } else {
     cerr << "cp: cannot copy '" << from_path << "' -> '" << to_path << "'\n";
   }
+
+  cout << endl << flush;
 
   return false;
 }
