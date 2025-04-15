@@ -33,4 +33,4 @@ std::string get_filename_from_path(const std::string& path);
 
 std::vector<DirItem> walk_dir(const std::string& path);
 
-
+void fix_path(std::string& path);

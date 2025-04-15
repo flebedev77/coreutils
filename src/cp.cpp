@@ -142,6 +142,17 @@ int main(int argc, char** argv)
     {
       to_path += '/';
     }
+
+    if (!filesystem::exists(to_path))
+    {
+      if (filesystem::create_directory(to_path))
+      {
+        if (options.verbose)
+        {
+          cout << "'" << to_path << "' didn't exist. Created\n";
+        }
+      }
+    }
     
     vector<DirItem> paths_to = walk_dir(from_path);
     vector<DirItem> paths_from(paths_to);
@@ -158,6 +169,9 @@ int main(int argc, char** argv)
 
       DirItem& to_item = paths_to.at(i);
       to_item.path = to_path + to_item.path.substr(from_path.length(), to_item.path.length());
+      
+      fix_path(from_item.path);
+      fix_path(to_item.path);
 
 
       if (options.debug)
@@ -178,11 +192,16 @@ int main(int argc, char** argv)
           {
             cout << from_item.path << " -> " << to_item.path << endl;
           }
-        } else {
+        } else 
+        {
           cout << "cp: error trying to replicate directory '" << to_item.path << "'\n";
         }
 
+      } else
+      {
+        copy_file(from_item.path, to_item.path, options.verbose, options.progress_enabled);
       }
+
     }
 
   }

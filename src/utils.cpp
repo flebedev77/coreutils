@@ -36,6 +36,21 @@ std::string get_filename_from_path(const std::string& path) {
     return filename;
 }
 
+void fix_path(std::string& path)
+{
+  for (size_t i = path.length()-1; i >= 1; i--)
+  {
+    if (path[i] == '/' && path[i-1] == '/')
+    {
+      path.erase(i-1);
+    }
+  }
+  if (std::filesystem::is_directory(path) && path.back() != '/')
+  {
+    path += '/';
+  }
+}
+
 
 StorageAmount convert_bytes(float value) 
 {
