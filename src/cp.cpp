@@ -200,6 +200,11 @@ int main(int argc, char** argv)
       } else
       {
         copy_file(from_item.path, to_item.path, options.verbose, options.progress_enabled);
+
+        if (options.progress_enabled)
+        {
+          cout << fixed << setprecision(2) << (static_cast<float>(i) / static_cast<float>(paths_to.size())) * 100.f << "% (" << i << "/" << paths_to.size() << ")\n" << flush;
+        }
       }
 
     }
