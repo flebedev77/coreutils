@@ -5,6 +5,26 @@ bool string_includes_char(std::string& str, char find)
   return str.find(find) != std::string::npos;
 }
 
+std::vector<DirItem> walk_dir(const std::string& path)
+{
+  using namespace std;
+  namespace fs = std::filesystem;
+
+  vector<DirItem> paths;
+
+  for (const auto& entry : fs::directory_iterator(path)) {
+    paths.push_back(DirItem {entry.path(), entry.path().filename(), fs::is_directory(entry)});
+    if (fs::is_regular_file(entry)) {
+    } else if (fs::is_directory(entry)) {
+      vector<DirItem> sub_paths = walk_dir(entry.path().string());
+      paths.insert(paths.end(), sub_paths.begin(), sub_paths.end());
+    }
+  }
+
+  return paths;
+}
+
+
 std::string get_filename_from_path(const std::string& path) {
     std::string filename;
     std::size_t last_slash_pos = path.find_last_of("/\\");

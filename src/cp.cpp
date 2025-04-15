@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <filesystem>
+#include <vector>
 #include "cp_data.h"
 #include "utils.h"
 
@@ -11,6 +12,7 @@ struct CopyOptions
   bool progress_enabled;
   bool recursive;
   bool verbose;
+  bool debug;
 };
 
 int main(int argc, char** argv) 
@@ -18,7 +20,7 @@ int main(int argc, char** argv)
   using namespace std;  
 
   CopyOptions options = {
-    false, false, false
+    false, false, false, false
   };
 
   string from_path = "";
@@ -40,6 +42,11 @@ int main(int argc, char** argv)
       {
         cout << help_message;
         return 1;
+      }
+
+      if (current_argument == "--debug")
+      {
+        options.debug = true;
       }
     }
 
@@ -105,30 +112,78 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  if (get_filename_from_path(from_path) == "" || filesystem::is_directory(from_path))
-  {
-    cout << "cp: -r not specified; omitting directory '" << from_path << "'\n";
-    return 1;
-  }
-
   if (get_filename_from_path(to_path) == "")
   {
     to_path += get_filename_from_path(from_path);
   }
 
-  if (filesystem::is_directory(to_path))
+  if (filesystem::is_directory(to_path) && to_path.back() != '/')
   {
     to_path += "/";
     to_path += get_filename_from_path(from_path);
   }
 
+
   if (!options.recursive)
   {
+
+    if (get_filename_from_path(from_path) == "" || filesystem::is_directory(from_path))
+    {
+      cout << "cp: -r not specified; omitting directory '" << from_path << "'\n";
+      return 1;
+    }
+
     copy_file(from_path, to_path, options.verbose, options.progress_enabled);
   } else
   {
     // TODO: Loop through all the files and directories in the from_path and copy them to to_path
     
+    if (to_path.back() != '/')
+    {
+      to_path += '/';
+    }
+    
+    vector<DirItem> paths_to = walk_dir(from_path);
+    vector<DirItem> paths_from(paths_to);
+
+
+    if (options.verbose)
+    {
+      cout << "cp: scanning directory '" << from_path << "'\n";
+    }
+
+    for (long unsigned int i = 0; i < paths_to.size(); i++)
+    {
+      DirItem& from_item = paths_from.at(i);
+
+      DirItem& to_item = paths_to.at(i);
+      to_item.path = to_path + to_item.path.substr(from_path.length(), to_item.path.length());
+
+
+      if (options.debug)
+      {
+        if (to_item.filename != from_item.filename)
+        {
+          cout << "cp: internal error '" << to_item.filename << "' != '" << from_item.filename << "'\n";
+          return 1;
+        }
+        cout << from_item.path << " -> " << to_item.path << " is_directory = " << ((to_item.is_directory) ? "yes" : "no") << endl;
+      }
+
+      if (from_item.is_directory && to_item.is_directory)
+      {
+        if (filesystem::create_directory(to_item.path))
+        {
+          if (options.verbose)
+          {
+            cout << from_item.path << " -> " << to_item.path << endl;
+          }
+        } else {
+          cout << "cp: error trying to replicate directory '" << to_item.path << "'\n";
+        }
+
+      }
+    }
 
   }
 
