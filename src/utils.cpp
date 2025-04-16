@@ -49,6 +49,10 @@ void fix_path(std::string& path)
   {
     path += '/';
   }
+  if (path[0] != '/' && path[0] != '.')
+  {
+    path = "./" + path;
+  }
 }
 
 

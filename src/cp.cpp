@@ -123,6 +123,9 @@ int main(int argc, char** argv)
     to_path += get_filename_from_path(from_path);
   }
 
+  fix_path(from_path);
+  fix_path(to_path);
+
 
   if (!options.recursive)
   {
