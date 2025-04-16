@@ -1,6 +1,6 @@
 CXX = g++
 
-CXXFLAGS=-O3 -std=c++17 -Wall -Wextra -g
+CXXFLAGS=-O3 -std=c++17 -Wall -Wextra
 
 OUTDIR=build
 OBJDIR=build/objs
@@ -27,3 +27,10 @@ $(MV_EXEC): $(MV_SRC) $(OBJS)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+install:
+	cp -v $(CP_EXEC) /usr/local/bin/
+	cp -v $(MV_EXEC) /usr/local/bin/
+
+uninstall:
+	rm -v /usr/local/bin/cp /usr/local/bin/mv
